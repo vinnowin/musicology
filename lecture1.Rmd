@@ -1,0 +1,34 @@
+---
+title: "lecture 1"
+author: "Vincent Huf"
+date: "10-2-2021"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(spotifyr)
+```
+
+
+```{r}
+zeros <- get_playlist_audio_features("","6dv5FbNRVlQelteqnNDFTe")
+eighties <- get_playlist_audio_features("","23xQYspGsaIsztrKTHM8cN")
+```
+```{r}
+combined <-
+  bind_rows(
+    zeros %>% mutate(category = "Zeros"),
+    eighties %>% mutate(category = "Eighties")
+  )
+combined %>%
+  ggplot(aes(x = energy)) +
+  geom_histogram(binwidth = 0.1) +
+  facet_wrap(~category)
+
+```
+```{r}
+combined %>%
+  ggplot(aes(x = energy, y = danceability, color = playlist_name, size = tempo)) + geom_point()
+```
+
