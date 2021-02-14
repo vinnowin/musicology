@@ -36,7 +36,7 @@ combi %>%
     size = "Tempo") + scale_color_binned(n.breaks = 3, show.limits = TRUE) + scale_size_continuous() + scale_x_continuous() + scale_y_continuous()
 ```
 
-<br><br>
+\newpage
 
 This graph compares slowdives music from the 90s, and their reunion album from 2018.
 
