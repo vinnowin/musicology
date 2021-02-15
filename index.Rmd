@@ -4,6 +4,26 @@ author: "Vincent Huf"
 date: "9-2-2021"
 output: html_document
 ---
+# musicology
+musicology portofolio
+
+This corpus consists of albums from shoegaze bands, both from the 90s and modern day. The older albums are amongst the most famous shoegaze albums of all time, and are considered to be the foundation of the genre. These include bands such as Slowdive, Jesus and the mary chain, and Ride. There are also modern day shoegaze bands, such as DIIV, Ringo Deathstarr and the reunion albums of Slowdive and Ride, two artists who are nowadays seen as two of the 'big three' of shoegaze. FInally there are some dream pop albums in there, since the two genres are closely related, with both modern day albums and older classics.
+
+In this corpus it will be interesting to compare the older albums to the modern albums. How much of the genre has changed since the ending of shoegaze in the 90s and it's resurgence in the 10s? And how is this change visible in the bands who made reunion albums 25 years later? Furthermore, what is the musical resemblance between shoegaze and dreampop, a subgenre emerging from shoegaze which is becoming more and more popular nowadays. Do these bands draw inspiration from older shoegaze or newer shoegaze?
+
+I choose this corpus because these two genres are two of my favourite genres, en because people always comment on how all of the songs sound almost the same. Therefore I would also like to see how alike those songs actually are. One of the flaws of this corpus is the fact that the biggest name in this genre, my bloody valentine, is not on spotify. But despite this, there are still more than enough big bands from both the past and the present who can represent the genre. 
+
+Tracks from Beach House and Cocteau twins will probably standout because of their lack of guitar. It will be interesting to see why snd how these dreampop/shoegaze bands still share a resemblance and draw inspiration from the classic shoegaze bands.
+# musicology
+musicology portofolio
+
+This corpus consists of albums from shoegaze bands, both from the 90s and modern day. The older albums are amongst the most famous shoegaze albums of all time, and are considered to be the foundation of the genre. These include bands such as Slowdive, Jesus and the mary chain, and Ride. There are also modern day shoegaze bands, such as DIIV, Ringo Deathstarr and the reunion albums of Slowdive and Ride, two artists who are nowadays seen as two of the 'big three' of shoegaze. FInally there are some dream pop albums in there, since the two genres are closely related, with both modern day albums and older classics.
+
+In this corpus it will be interesting to compare the older albums to the modern albums. How much of the genre has changed since the ending of shoegaze in the 90s and it's resurgence in the 10s? And how is this change visible in the bands who made reunion albums 25 years later? Furthermore, what is the musical resemblance between shoegaze and dreampop, a subgenre emerging from shoegaze which is becoming more and more popular nowadays. Do these bands draw inspiration from older shoegaze or newer shoegaze?
+
+I choose this corpus because these two genres are two of my favourite genres, en because people always comment on how all of the songs sound almost the same. Therefore I would also like to see how alike those songs actually are. One of the flaws of this corpus is the fact that the biggest name in this genre, my bloody valentine, is not on spotify. But despite this, there are still more than enough big bands from both the past and the present who can represent the genre. 
+
+Tracks from Beach House and Cocteau twins will probably standout because of their lack of guitar. It will be interesting to see why snd how these dreampop/shoegaze bands still share a resemblance and draw inspiration from the classic shoegaze bands.
 
 
 ```{r}
@@ -11,7 +31,7 @@ library(tidyverse)
 library(spotifyr)
 
 ```
-
+<div>
 ```{r}
 just <- get_playlist_audio_features("", "6NqUXlpEEFZNytZiGLi4kW")
 slowdive <- get_playlist_audio_features("", "12KhHp6mG8xZz1urkeBhoS")
@@ -35,12 +55,12 @@ combi %>%
     colour = "Mode",
     size = "Tempo") + scale_color_binned(n.breaks = 3, show.limits = TRUE) + scale_size_continuous() + scale_x_continuous() + scale_y_continuous()
 ```
-
-<div
+</div>
+<div>
 
 This graph compares slowdives music from the 90s, and their reunion album from 2018.
 
 The general conclusion from this comparison is that the newer shoegaze songs from slowdive are louder than the songs from the 90s. Also, a lot of songs in the 90s are clustered together, which indicates some kind of sweet spot for loudness and instrumentalism. Last of all, the newer songs tend to be in major key. In the 90s, shoegaze was considered as 'emo' music, which might explain why there were more songs in minor key back then. It would be interesting to see if this change from minor to major also appears in other bands.
 
 The two outliers with very low intrumentalism are two songs which also have a very low speechiness. I'm not sure yet why, because this seems to contradict. It might be because their vocals really blend into the guitar, and this might be harder to differentiate for the algorithm.  
-</div
+</div>
