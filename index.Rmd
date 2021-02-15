@@ -14,13 +14,13 @@ I choose this corpus because these two genres are two of my favourite genres, en
 Tracks from Beach House and Cocteau twins will probably standout because of their lack of guitar. It will be interesting to see why snd how these dreampop/shoegaze bands still share a resemblance and draw inspiration from the classic shoegaze bands.
 
 
-```{r}
+```{r, echo = FALSE}
 library(tidyverse)
 library(spotifyr)
 
 ```
 <div>
-```{r}
+```{r, echo = FALSE}
 just <- get_playlist_audio_features("", "6NqUXlpEEFZNytZiGLi4kW")
 slowdive <- get_playlist_audio_features("", "12KhHp6mG8xZz1urkeBhoS")
 
@@ -32,7 +32,7 @@ combi <-
   )
 ```
 
-```{r}
+```{r, echo = FALSE}
 combi %>%
   ggplot(aes(x = loudness, y = instrumentalness, color = mode, size = tempo)) + geom_point(alpha = 0.5) + 
   
