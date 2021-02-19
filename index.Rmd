@@ -2,8 +2,12 @@
 title: 'Shoegaze: from the 90s to the present'
 author: "Vincent Huf"
 date: "9-2-2021"
-output: html_document
+output: 
+  flexdashboard::flex_dashboard:
+    storyboard: true
+    
 ---
+### Welcome to my main page. Here you can find a short introduction about my corpus and research
 
 This corpus consists of albums from shoegaze bands, both from the 90s and modern day. The older albums are amongst the most famous shoegaze albums of all time, and are considered to be the foundation of the genre. These include bands such as Slowdive, Jesus and the mary chain, and Ride. There are also modern day shoegaze bands, such as DIIV, Ringo Deathstarr and the reunion albums of Slowdive and Ride, two artists who are nowadays seen as two of the 'big three' of shoegaze. FInally there are some dream pop albums in there, since the two genres are closely related, with both modern day albums and older classics.
 
@@ -17,8 +21,9 @@ Tracks from Beach House and Cocteau twins will probably standout because of thei
 ```{r, echo = FALSE}
 library(tidyverse)
 library(spotifyr)
-
+library(plotly)
 ```
+### Here you can find track-level features and some graphs
 <div>
 ```{r, echo = FALSE}
 just <- get_playlist_audio_features("", "6NqUXlpEEFZNytZiGLi4kW")
@@ -33,7 +38,7 @@ combi <-
 ```
 
 ```{r, echo = FALSE}
-combi %>%
+ja <- combi %>%
   ggplot(aes(x = loudness, y = instrumentalness, color = mode, size = tempo)) + geom_point(alpha = 0.5) + 
   
   facet_wrap(~category) + ggtitle("Slowdive in the 90s vs the present")+ theme(plot.title = element_text(size = 15))+theme_light() +      
@@ -44,9 +49,13 @@ combi %>%
     size = "Tempo") + scale_color_binned(n.breaks = 3, show.limits = TRUE) + scale_size_continuous() + scale_x_continuous() + scale_y_continuous()
 ```
 </div>
+```{r}
+ggplotly(ja)
+```
+
 <div>
 
-This graph compares slowdives music from the 90s, and their reunion album from 2018.
+*** This graph compares slowdives music from the 90s, and their reunion album from 2018.
 
 The general conclusion from this comparison is that the newer shoegaze songs from slowdive are louder than the songs from the 90s. Also, a lot of songs in the 90s are clustered together, which indicates some kind of sweet spot for loudness and instrumentalism. Last of all, the newer songs tend to be in major key. In the 90s, shoegaze was considered as 'emo' music, which might explain why there were more songs in minor key back then. It would be interesting to see if this change from minor to major also appears in other bands.
 
