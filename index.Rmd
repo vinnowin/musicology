@@ -5,7 +5,7 @@ date: "9-2-2021"
 output: 
   flexdashboard::flex_dashboard:
     storyboard: true
-    theme: cerulean
+    theme: simplex
   
     
 ---
@@ -82,7 +82,7 @@ fortydays <-
 ```
 
 ```{r, echo = FALSE}
-fortydays %>%
+forty <- fortydays %>%
   mutate(pitches = map(pitches, compmus_normalise, "euclidean")) %>%
   compmus_gather_chroma() %>% 
   ggplot(
@@ -98,6 +98,9 @@ fortydays %>%
   theme_minimal() +
   scale_fill_viridis_c()
 
+```
+```{r}
+ggplotly(forty)
 ```
 
 ***
