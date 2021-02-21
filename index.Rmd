@@ -5,6 +5,8 @@ date: "9-2-2021"
 output: 
   flexdashboard::flex_dashboard:
     storyboard: true
+    theme: cerulean
+  
     
 ---
 ### Welcome to my main page. Here you can find a short introduction about my corpus and research
@@ -22,9 +24,10 @@ Tracks from Beach House and Cocteau twins will probably standout because of thei
 library(tidyverse)
 library(spotifyr)
 library(plotly)
+library(compmus)
 ```
 ### The change between Slowdive and Ride's first albums and their reunion albums, 25 years later
-<div>
+
 ```{r, echo = FALSE}
 just <- get_playlist_audio_features("", "6NqUXlpEEFZNytZiGLi4kW")
 slowdive <- get_playlist_audio_features("", "12KhHp6mG8xZz1urkeBhoS")
@@ -55,21 +58,47 @@ combi %>%
     colour = "Mode",
     size = "Tempo") + scale_color_binned(breaks = c(0,0.5,1), labels = c("Minor",0.5,"Major")) + scale_size_continuous() + scale_x_continuous() + scale_y_continuous()
 ```
-</div>
 
 
 
-<div>
+
 
 ***
 
-This graph compares slowdives music from the 90s, and their reunion album from 2018.
+This graph compares Slowdive and Ride's music from the 90s, and their reunion albuma from the 10s.
 
-The general conclusion from this comparison is that the newer shoegaze songs from slowdive are louder than the songs from the 90s. Also, a lot of songs in the 90s are clustered together, which indicates some kind of sweet spot for loudness and instrumentalism. Last of all, the newer songs tend to be in major key. In the 90s, shoegaze was considered as 'emo' music, which might explain why there were more songs in minor key back then. It would be interesting to see if this change from minor to major also appears in other bands.
+One conclusion from this comparison is that the newer shoegaze songs from these bands are louder than the songs from the 90s. Also, a lot of songs in the 90s are spread along the x-axis, around -5, which indicates some kind of sweet spot for loudness. Last of all, the newer songs tend to be in major key more often than in the 90s. In the 90s, shoegaze was considered as 'emo' music, which might explain why there were more songs in minor key back then. It would be interesting to see if this change from minor to major also appears in other bands.
 
-The two outliers with very low intrumentalism are two songs which also have a very low speechiness. I'm not sure yet why, because this seems to contradict. It might be because their vocals really blend into the guitar, and this might be harder to differentiate for the algorithm.  
+The group of songs with very low intrumentalism are  songs which also have a very low speechiness, according to spotify's data. I'm not sure yet why, because this seems to contradict. It might be because their vocals really blend into the guitar, and this might be harder to differentiate for the algorithm. Another explanation might be that the music in those songs is one big "wall of sound" (a key aspect of shoegaze), which might cause problems with detecting the overall instrumentalness. 
+
+### The chromatogram of 40 days by Slowdive shows a lot of shifting between chords
+
+```{r, echo = FALSE}
+fortydays <-
+  get_tidy_audio_analysis("3jQBAyQVJSl9fc6l4tsWWP") %>%
+  select(segments) %>%
+  unnest(segments) %>%
+  select(start, duration, pitches)
+```
+
+```{r, echo = FALSE}
+fortydays %>%
+  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) %>%
+  compmus_gather_chroma() %>% 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+  theme_minimal() +
+  scale_fill_viridis_c()
+
+```
 
 ***
-</div>
-
-### Conclusions so far
+This chromatogram shows the song "40 days" from Slowdive's album Souvlaki (1994). This track was an outlier in the graph which compared the 90s albums with the modern albums, because of its very low instrumentalness. You can see that the pitch class of this track quickly shifts from D and E, and for some part G and B. This is probably because of the different guitar layers in the song, and the use of guitar pedals. This way they can quickly and smoothly alternate between chords. However, this still does not explain the extremely low instrumentalness of the track according to spotify.
