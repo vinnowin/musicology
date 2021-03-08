@@ -9,6 +9,75 @@ output:
   
     
 ---
+
+```{r, echo = FALSE}
+library(tidyverse)
+library(spotifyr)
+library(plotly)
+library(compmus)
+```
+### Low level visualisations of dreampop and shoegaze songs
+```{r, echo=FALSE}
+gaze <-
+  get_playlist_audio_features(
+    "thesoundsofspotify",
+    "5ydNNBQbwQJuhmcxyo8K1f"
+  ) %>%
+  slice(1:60) %>%
+  add_audio_analysis()
+dreampop <-
+  get_playlist_audio_features(
+    "thesoundsofspotify",
+    "2A5zN7OTP4n64gEtsFEO2Z"
+  ) %>%
+  slice(1:60) %>%
+  add_audio_analysis()
+compare <-
+  gaze %>%
+  mutate(genre = "Shoegaze") %>%
+  bind_rows(dreampop %>% mutate(genre = "Dream pop"))
+
+```
+
+```{r, echo=FALSE}
+compare %>%
+  mutate(
+    sections =
+      map(
+        sections,                                    # sections or segments
+        summarise_at,
+        vars(tempo, loudness, mode),             # features of interest
+        list(section_mean = mean, section_sd = sd)   # aggregation functions
+      )
+  ) %>%
+  unnest(sections) %>%
+  ggplot(
+    aes(
+      x = tempo,
+      y = tempo_section_sd,
+      colour = genre,
+      alpha = loudness
+    )
+  ) +
+  geom_point(aes(size = mode)) +
+  scale_radius(range = c(3,5), breaks = c(0,1), labels = c("Minor","Major"))+
+  geom_rug() +
+  theme_minimal() +
+  ylim(0, 5) +
+  labs(
+    x = "Mean Tempo (bpm)",
+    y = "SD Tempo",
+    colour = "Genre",
+    size = "Mode",
+    alpha = "Volume (dBFS)"
+  ) 
+```
+
+***
+
+This graph shows the mean tempo, standard deviation of it, loudness and mode of shoegaze and dreampop songs. Dreampop is a subgenre, inspired by shoegaze, focussing more on melodic harmonies and atmosphere, and less on the use of heavy guitar, resulting in a so-called "wall of sound" commonly used in shoegaze. You could see it as shoegaze being the more agressive version of dreampop. For both genres the "sounds of spotify" playlists were used.
+In the visualisation you can see that shoegaze generally has a higher tempo than dreampop, and is more clustered towards a very low standard deviation of the tempo. This could be because shoegaze tends to create a constant sound, leaving no room for empty space were the tempo could change. The outliers could be from songs that feature a more traditional verse-chorus-verse structure, were the tempo alternates. The dreampop songs are more scattered around the graph, with the majority having a slower tempo.
+
 ### Welcome to my main page. Here you can find a short introduction about my corpus and research
 
 PLEASE DONT SHOW IN CLASS
@@ -51,14 +120,14 @@ combi <-
 
 ```{r, echo = FALSE}
 interact <- combi %>%
-  ggplot(aes(x = loudness, y = instrumentalness, color = mode, size = tempo)) + geom_point(alpha = 0.5) + 
+  ggplot(aes(x = loudness, y = instrumentalness, color = mode, size = tempo, label = track.name)) + geom_point(alpha = 0.5) + 
   
   facet_wrap(~category) + ggtitle("Slowdive and Ride in the 90s vs the present")+ theme(plot.title = element_text(size = 15))+theme_light() +      
   labs(               
     x = "Loudness",
     y = "Instrumentalness",
     colour = "Mode",
-    size = "Tempo") + scale_color_binned(breaks = c(0,0.5,1), labels = c("Minor",0.5,"Major")) + scale_size_continuous() + scale_x_continuous() + scale_y_continuous()
+    size = "Tempo") + scale_color_binned(breaks = c(0,0.5,1), labels = c("Minor",0.5,"Major")) + scale_size_continuous() + scale_x_continuous() + scale_y_continuous() 
 
 ggplotly(interact)
 ```
@@ -86,7 +155,7 @@ fortydays <-
 ```
 
 ```{r, echo = FALSE}
-forty <- fortydays %>%
+fortydays %>%
   mutate(pitches = map(pitches, compmus_normalise, "euclidean")) %>%
   compmus_gather_chroma() %>% 
   ggplot(
@@ -101,7 +170,7 @@ forty <- fortydays %>%
   labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
   theme_minimal() +
   scale_fill_viridis_c()
-ggplotly(forty)
+
 ```
 
 
@@ -161,5 +230,5 @@ bind_rows(
 ```
 
 ***
-These self similarity matrices show the structure of the 7-minute album closer 'Acheron' (2019), composed by the new-gaze band DIIV. After two albums where they made more valent tracks, their latest album, featuring this song, was more inspired by the traditional 'emo' shoegaze from the 90s. 
+These self similarity matrices show the structure of the 7-minute album closer 'Acheron' (2019), composed by the new-gaze band DIIV. After two albums where they made more valent tracks, their latest album was more inspired by the traditional 'emo' shoegaze from the 90s, with this song being one of the noisier songs on the album. 
 The two matrices are both at bars level, and use manhattan and euclidean normalisation, respectively. The chroma-based matrix shows how the first half of the song follows the classic verse-chorus-verse-chorus structure. Around 220 seconds, there is a switch in the song, which features a long bridge which transitions in an instrumental outro. The structure of the second half is more visible in the timbre-based matrix. There you can see a clear distinction between the end of the bridge and the beginning of the outro. The outro adds a lot more guitar layers, and the sound gets amore 'heavy' than during the bridge, hence the clear distinction at the 320 second mark.
