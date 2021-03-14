@@ -16,6 +16,26 @@ library(spotifyr)
 library(plotly)
 library(compmus)
 ```
+
+
+### The consistent tempo of shoegaze songs
+```{r}
+dark <- get_tidy_audio_analysis("4kAflSfOBf6Wv5ZD5abUvZ")
+```
+```{r}
+dark %>%
+  tempogram(window_size = 8, hop_size = 1, cyclic = FALSE) %>%
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+```
+
+***
+
+Shoegaze is not known for having big changes in tempo throughout songs, because of its tendency to have a consistent wall of sound. A clear example of this is in the tempogram which describes the tempo of the song 'No longer making time' by Slowdive. As you can see the tempo is almost the same for the whole duration of the song. There is a little drop at the 300 seconds mark, which is probably the point in the song where there is a fade out, after which the song repeats its intro one last time. 
+
 ### Low level visualisations of dreampop and shoegaze songs
 ```{r, echo=FALSE}
 gaze <-
@@ -56,7 +76,8 @@ compare %>%
       x = tempo,
       y = tempo_section_sd,
       colour = genre,
-      alpha = loudness
+      alpha = loudness,
+      label = track.name
     )
   ) +
   geom_point(aes(size = mode)) +
@@ -71,6 +92,7 @@ compare %>%
     size = "Mode",
     alpha = "Volume (dBFS)"
   ) 
+
 ```
 
 ***
