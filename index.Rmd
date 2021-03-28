@@ -47,12 +47,8 @@ I chose this corpus because shoegaze is one of my favourite genres, en because p
 
 Tracks from Beach House and Cocteau twins will probably standout because of their lack of guitar. It will be interesting to see why and how these dreampop/shoegaze bands still share a resemblance and draw inspiration from the classic shoegaze bands.
 
-\begin{figure}[b]
-  \includegraphics{C:/Users\VINCE\OneDrive\Musicology\shoegaze1.jpg}
-  \caption{Effects pedals}
-\end{figure}
 
-
+<img style="float: bottom;" src="C:/Users\VINCE\OneDrive\Musicology\shoegaze1.jpg">
 
 
 ### The change between Slowdive and Ride's first albums and their reunion albums, 25 years later
@@ -399,6 +395,22 @@ indie_forest <-
     control = control_resamples(save_pred = TRUE)
   )
 ```
+```{r,echo=FALSE}
+workflow() %>% 
+  add_recipe(indie_recipe) %>% 
+  add_model(forest_model) %>% 
+  fit(indie_features) %>% 
+  pluck("fit", "fit", "fit") %>%
+  ranger::importance() %>% 
+  enframe() %>% 
+  mutate(name = fct_reorder(name, value)) %>% 
+  ggplot(aes(name, value)) + 
+  geom_col() + 
+  coord_flip() +
+  theme_minimal() +
+  labs(x = NULL, y = "Importance")
+```
+
 
 ***
 
@@ -413,5 +425,12 @@ A common stereotype for both shoegaze and dreampop is that both genres sound the
 It is interesting to note that the accuracy score for the classifier is actually pretty good, despite said prejudice. Another interesting point is the importance of **duration** in classifying correctly. After looking at both playlists, shoegaze songs tend to be much longer than dreampop songs. The importance of accousticness and the second timbre component can be explained by the lack of guitar in most dreampop songs, and how they focus more on atmosphere and 'clean' production than shoegaze.
 
 ### Conclusions
+
+After making this portefolio, I can conclude that there certainly is a difference between the older shoegaze and newer shoegaze, and between shoegaze and dreampop. The notion that all of these genres and songs sound exactly the same can be discarded when looking at the different graphs and grams that are made throughout the portefolio. 
+
+This way, I hope that people can see that even music that sounds similar on the surface, is unique in it's own way. Having a wall of sound in your songs is not just instruments thrown together, but a very delicate proces of finding just the right balance.
+
+Who knows what the new generation of shoegaze bands find to change the course of this genre once again.
+
 
 
