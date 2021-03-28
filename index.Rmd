@@ -48,9 +48,6 @@ I chose this corpus because shoegaze is one of my favourite genres, en because p
 Tracks from Beach House and Cocteau twins will probably standout because of their lack of guitar. It will be interesting to see why and how these dreampop/shoegaze bands still share a resemblance and draw inspiration from the classic shoegaze bands.
 
 
-<img style="float: bottom;" src="C:/Users\VINCE\OneDrive\Musicology\shoegaze1.jpg">
-
-
 ### The change between Slowdive and Ride's first albums and their reunion albums, 25 years later
 
 ```{r, echo = FALSE}
@@ -381,7 +378,25 @@ indie_knn <-
 ```{r,echo=FALSE}
 indie_knn %>% get_conf_mat() %>% autoplot(type = "mosaic")
 ```
-```{r,echo = FALSE}
+
+
+
+***
+
+A common stereotype for both shoegaze and dreampop is that both genres sound the same and are **hard to distinguish**. With a k-nearest classifier we will try to distinguish these two genres, using the spotify playlist 'Shoegaze classics' and 'Dreampop', the two most popular playlists for both genres. Before feature selection, the accuracy for predicting shoegaze and dreampop as a genre correctly was **0.677 and 0.689**, respectively. After using random forest to establish the most important features, the accuracy for both genres became **0.766**. The most import features turned out to be the following:
+
+  - Timbre 2 (brightness)
+  - Duration
+  - Timbre 5 
+  - Accousticness
+  - Danceability
+  
+Check the next tab in my portefolio to see the distribution of the importance of the features.
+It is interesting to note that the accuracy score for the classifier is actually pretty good, despite said prejudice. Another interesting point is the importance of **duration** in classifying correctly. After looking at both playlists, shoegaze songs tend to be much longer than dreampop songs. The importance of accousticness and the second timbre component can be explained by the lack of guitar in most dreampop songs, and how they focus more on atmosphere and 'clean' production than shoegaze.
+
+### The important features for clustering
+
+```{r}
 forest_model <-
   rand_forest() %>%
   set_mode("classification") %>% 
@@ -395,7 +410,7 @@ indie_forest <-
     control = control_resamples(save_pred = TRUE)
   )
 ```
-```{r,echo=FALSE}
+```{r}
 workflow() %>% 
   add_recipe(indie_recipe) %>% 
   add_model(forest_model) %>% 
@@ -411,18 +426,6 @@ workflow() %>%
   labs(x = NULL, y = "Importance")
 ```
 
-
-***
-
-A common stereotype for both shoegaze and dreampop is that both genres sound the same and are **hard to distinguish**. With a k-nearest classifier we will try to distinguish these two genres, using the spotify playlist 'Shoegaze classics' and 'Dreampop', the two most popular playlists for both genres. Before feature selection, the accuracy for predicting shoegaze and dreampop as a genre correctly was **0.677 and 0.689**, respectively. After using random forest to establish the most important features, the accuracy for both genres became **0.766**. The most import features turned out to be the following:
-
-  - Timbre 2 (brightness)
-  - Duration
-  - Timbre 5 
-  - Accousticness
-  - Danceability
-  
-It is interesting to note that the accuracy score for the classifier is actually pretty good, despite said prejudice. Another interesting point is the importance of **duration** in classifying correctly. After looking at both playlists, shoegaze songs tend to be much longer than dreampop songs. The importance of accousticness and the second timbre component can be explained by the lack of guitar in most dreampop songs, and how they focus more on atmosphere and 'clean' production than shoegaze.
 
 ### Conclusions
 
