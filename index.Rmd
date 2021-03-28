@@ -20,6 +20,275 @@ library(ggdendro)
 library(heatmaply)
 source("spotify.R")
 ```
+
+
+
+### Welcome to my main page. Here you can find a short introduction about my corpus and research
+
+**A short introduction to shoegaze**
+
+This corpus consists of albums from shoegaze bands, both from the 90s and modern day. The older albums are amongst the most famous shoegaze albums of all time, and are considered to be the foundation of the genre. The name for this genre comes from the heavy use of effect pedals. This meant that during live shows, performers had to look down a lot to control these pedals (gazing at their shoes). These effects created a lot of guitar distortion, feedback and a constant 'wall of sound'.
+
+**The music in my corpus**
+
+The founders of this are bands such as Slowdive, Jesus and the mary chain, and Ride. In this corpus, there are also modern day shoegaze bands, such as DIIV, Ringo Deathstarr and the reunion albums of Slowdive and Ride, two artists who are nowadays seen as two of the 'big three' of shoegaze.
+
+**Research questions**
+
+The main focus of this portefolio will be the evolution of shoegaze from its starting popularity in the 90s, and its resurgence in the present. What are the characteristics of a shoegaze song? And how much did the style of older bands change when they made reunion albums 25 years later? Could the change in music style be explained by the status this genre had during both time periods?
+
+In addition to that, I will take a look at the differences between shoegaze and a popular subgenre that originated from it: dreampop.
+
+**Why shoegaze?**
+
+I chose this corpus because shoegaze is one of my favourite genres, en because people always comment on how all of the songs sound almost the same. Therefore I would also like to see how alike those songs actually are. One of the flaws of this corpus is the fact that the biggest name in this genre, my bloody valentine, is not on spotify. But despite this, there are still more than enough big bands from both the past and the present who can represent the genre. 
+
+**The odd ones**
+
+Tracks from Beach House and Cocteau twins will probably standout because of their lack of guitar. It will be interesting to see why and how these dreampop/shoegaze bands still share a resemblance and draw inspiration from the classic shoegaze bands.
+
+\begin{figure}[b]
+  \includegraphics{C:/Users\VINCE\OneDrive\Musicology\shoegaze1.jpg}
+  \caption{Effects pedals}
+\end{figure}
+
+
+
+
+### The change between Slowdive and Ride's first albums and their reunion albums, 25 years later
+
+```{r, echo = FALSE}
+just <- get_playlist_audio_features("", "6NqUXlpEEFZNytZiGLi4kW")
+slowdive <- get_playlist_audio_features("", "12KhHp6mG8xZz1urkeBhoS")
+nowhere <- get_playlist_audio_features("","5vTh9r5EEF3BoUxZ4p7X0i")
+lush <- get_playlist_audio_features("", "23erpreDqZ096vOZRYfS2y")
+safe <- get_playlist_audio_features("","7yi73753IXvjbyxGCKpjIt")
+weather <- get_playlist_audio_features("","5DYuHfzZwJE1KrJFoLFksi")
+
+combi <-
+  bind_rows(
+    just %>% mutate(category = "90s"),
+    slowdive %>% mutate(category = "10s"),
+    nowhere %>% mutate(category = "90s"),
+    lush %>% mutate(category = "90s"),
+    safe %>% mutate(category = "10s"),
+    weather %>% mutate(category = "10s")
+  )
+```
+
+```{r, echo = FALSE}
+interact <- combi %>%
+  ggplot(aes(x = loudness, y = instrumentalness, color = mode, size = tempo, label = track.name)) + geom_point(alpha = 0.5) + 
+  
+  facet_wrap(~category) + ggtitle("Slowdive and Ride in the 90s vs the present")+ theme(plot.title = element_text(size = 15))+theme_light() +      
+  labs(               
+    x = "Loudness",
+    y = "Instrumentalness",
+    colour = "Mode",
+    size = "Tempo") + scale_color_binned(breaks = c(0,0.5,1), labels = c("Minor",0.5,"Major")) +  scale_size_continuous() + scale_x_continuous() + scale_y_continuous() 
+
+ggplotly(interact)
+```
+
+
+
+
+
+***
+
+This graph compares **Slowdive** and **Ride's** music from the 90s, and their reunion albums from the 10s.
+
+One conclusion from this comparison is that the newer shoegaze songs from these bands are **louder** than the songs from the 90s. Also, a lot of songs in the 90s are spread along the x-axis, around -5, which indicates some kind of sweet spot for loudness. Last of all, the newer songs tend to be in **major key** more often than in the 90s. In the 90s, shoegaze was considered as 'emo' music, which might explain why there were more songs in minor key back then. It would be interesting to see if this change from minor to major also appears in other bands.
+
+The group of songs with very **low instrumentalness** are a little mystery. I'm not sure yet why the values are so low, because this seems to contradict with the sound of the songs. It might be because their vocals really blend into the guitar, and this might be harder to differentiate for the algorithm. Another explanation might be that the music in those songs is one big **"wall of sound"**, which might cause problems with detecting the overall instrumentalness, because it detects the guitar as some kind of irrelevant "noise". 
+
+### The chromagram of 40 days by Slowdive shows a lot of shifting between chords
+
+```{r, echo = FALSE}
+fortydays <-
+  get_tidy_audio_analysis("3jQBAyQVJSl9fc6l4tsWWP") %>%
+  select(segments) %>%
+  unnest(segments) %>%
+  select(start, duration, pitches)
+```
+
+```{r, echo = FALSE}
+fortydays %>%
+  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) %>%
+  compmus_gather_chroma() %>% 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(title = "Chromagram of 40 days by Slowdive", x = "Time (s)", y = NULL, fill = "Magnitude") +
+  theme_minimal() +
+  scale_fill_viridis_c()
+
+```
+
+
+***
+This chromagram shows the song **40 days** from Slowdive's album Souvlaki (1994). 
+
+<html>
+<audio controls>
+  <source src="C:/Users/VINCE/Downloads/40days.mp3" type="audio/mpeg">
+</audio>
+</html>
+
+This track was an outlier in the graph which compared the 90s albums with the modern albums, because of its very **low instrumentalness**. You can see that the pitch class of this track quickly shifts **from D and E**, and for some part G and B. This is probably because of the different guitar layers in the song, and the use of guitar pedals. This way they can quickly and smoothly alternate between chords. However, this still does not explain the extremely low instrumentalness of the track according to spotify.
+
+### The unconventional structure of 'Acheron", by new-gaze band DIIV
+
+```{r, echo=FALSE}
+irene <-
+  get_tidy_audio_analysis("4OcknjyF0hyytplO20bMHK") %>% # Change URI.
+  compmus_align(bars, segments) %>%                     # Change `bars`
+  select(bars) %>%                                      #   in all three
+  unnest(bars) %>%                                      #   of these lines.
+  mutate(
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "acentre", norm = "manhattan"              # Change summary & norm.
+      )
+  ) %>%
+  mutate(
+    timbre =
+      map(segments,
+        compmus_summarise, timbre,
+        method = "rms", norm = "euclidean"              # Change summary & norm.
+      )
+  )
+```
+
+```{r, echo=FALSE}
+bind_rows(
+  irene %>% 
+    compmus_self_similarity(pitches, "aitchison") %>% 
+    mutate(d = d / max(d), type = "Chroma"),
+  irene %>% 
+    compmus_self_similarity(timbre, "euclidean") %>% 
+    mutate(d = d / max(d), type = "Timbre")
+) %>%
+  mutate() %>% 
+  ggplot(
+    aes(
+      x = xstart + xduration / 2,
+      width = xduration,
+      y = ystart + yduration / 2,
+      height = yduration,
+      fill = d
+    )
+  ) +
+  geom_tile() +
+  coord_fixed() +
+  facet_wrap(~type) +
+  scale_fill_viridis_c(option = "E", guide = "none") +
+  theme_classic() + 
+  labs(title = "The structure of Acheron, using chroma and timbre features", x = "", y = "")
+
+```
+
+***
+These self similarity matrices show the structure of the 7-minute album closer **'Acheron' (2019)**, composed by the **new-gaze band DIIV**. After two albums where they made more valent tracks, their latest album was more inspired by the traditional 'emo' shoegaze from the 90s, with this song being one of the noisier songs on the album. Because of the combination of modern and old school shoegaze and its length, I picked this song to analyze.
+
+The two matrices are both at **bars** level, and use **manhattan** and **euclidean** normalisation, respectively. The **chroma-based** matrix shows how the first half of the song follows the classic verse-chorus-verse-chorus structure. Around 220 seconds, there is a switch in the song, which features a long bridge which transitions in an instrumental outro. The structure of the second half is more visible in the **timbre-based** matrix. There you can see a clear distinction between the end of the bridge and the beginning of the outro. The outro adds a lot more guitar layers, and the sound gets amore 'heavy' than during the bridge, hence the clear distinction at the 320 second mark.
+
+### The consistent tempo of shoegaze songs
+```{r}
+dark <- get_tidy_audio_analysis("4kAflSfOBf6Wv5ZD5abUvZ")
+```
+```{r}
+dark %>%
+  tempogram(window_size = 8, hop_size = 1, cyclic = FALSE) %>%
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(x = "Time (s)", y = "Tempo (BPM)") +
+  theme_classic()
+```
+
+***
+
+Shoegaze is not known for having big changes in tempo throughout songs, because of its tendency to have a consistent wall of sound. A clear example of this is in the tempogram which describes the tempo of the song **'No longer making time'** by **Slowdive**. As you can see the tempo is almost the same for the whole duration of the song. There is a little drop at the 300 seconds mark, which is probably the point in the song where there is a fade out, after which the song repeats its intro one last time. 
+
+Because tempograms are not really interesting for this corpus, I will not elaborate more on this subject.
+
+### Low level visualisations of dreampop and shoegaze songs
+
+```{r, echo=FALSE}
+gaze <-
+  get_playlist_audio_features(
+    "thesoundsofspotify",
+    "5ydNNBQbwQJuhmcxyo8K1f"
+  ) %>%
+  slice(1:60) %>%
+  add_audio_analysis()
+dreampop <-
+  get_playlist_audio_features(
+    "thesoundsofspotify",
+    "2A5zN7OTP4n64gEtsFEO2Z"
+  ) %>%
+  slice(1:60) %>%
+  add_audio_analysis()
+compare <-
+  gaze %>%
+  mutate(genre = "Shoegaze") %>%
+  bind_rows(dreampop %>% mutate(genre = "Dream pop"))
+
+```
+
+```{r, echo=FALSE}
+compare %>%
+  mutate(
+    sections =
+      map(
+        sections,                                    # sections or segments
+        summarise_at,
+        vars(tempo, loudness, mode),             # features of interest
+        list(section_mean = mean, section_sd = sd)   # aggregation functions
+      )
+  ) %>%
+  unnest(sections) %>%
+  ggplot(
+    aes(
+      x = tempo,
+      y = tempo_section_sd,
+      colour = genre,
+      alpha = loudness,
+      label = track.name
+    )
+  ) +
+  geom_point(aes(size = mode)) +
+  scale_radius(range = c(3,5), breaks = c(0,1), labels = c("Minor","Major"))+
+  geom_rug() +
+  theme_minimal() +
+  ylim(0, 5) +
+  labs(
+    x = "Mean Tempo (bpm)",
+    y = "SD Tempo",
+    colour = "Genre",
+    size = "Mode",
+    alpha = "Volume (dBFS)"
+  ) 
+
+```
+
+***
+
+This graph shows the **mean tempo, standard deviation of it, loudness and mode** of shoegaze and dreampop songs. Dreampop is a subgenre, inspired by shoegaze, focussing more on **melodic harmonies and atmosphere**, and less on the use of heavy guitar, resulting in a so-called "wall of sound" commonly used in shoegaze. You could see it as shoegaze being the more agressive version of dreampop. 
+
+For both genres the "sounds of spotify" playlists were used.
+In the visualisation you can see that shoegaze generally has a **higher tempo** than dreampop, and is more clustered towards a very **low standard deviation of the tempo**. This could be because shoegaze tends to create a constant sound, leaving no room for empty space were the tempo could change.
+
+The **outliers** could be from songs that feature a more traditional verse-chorus-verse structure, were the tempo alternates. The dreampop songs are more scattered around the graph, with the majority having a slower tempo.
+
 ### Defying stereotypes: Do dreampop and shoegaze really sound the same?
 
 ```{r, echo=FALSE}
@@ -99,7 +368,7 @@ indie_recipe <-
 ```{r,echo=FALSE}
 indie_cv <- indie_features %>% vfold_cv(10)
 ```
-```{r}
+```{r,echo = FALSE}
 knn_model <-
   nearest_neighbor(neighbors = 1) %>%
   set_mode("classification") %>% 
@@ -116,11 +385,24 @@ indie_knn <-
 ```{r,echo=FALSE}
 indie_knn %>% get_conf_mat() %>% autoplot(type = "mosaic")
 ```
-
+```{r,echo = FALSE}
+forest_model <-
+  rand_forest() %>%
+  set_mode("classification") %>% 
+  set_engine("ranger", importance = "impurity")
+indie_forest <- 
+  workflow() %>% 
+  add_recipe(indie_recipe) %>% 
+  add_model(forest_model) %>% 
+  fit_resamples(
+    indie_cv, 
+    control = control_resamples(save_pred = TRUE)
+  )
+```
 
 ***
 
-A common stereotype for both shoegaze and dreampop is that both genres sound the same and are hard to distinguish. With a k-nearest classifier we will try to distinguish these two genres, using the spotify playlist 'Shoegaze classics' and 'Dreampop', the two most popular playlists for both genres. Before feature selection, the accuracy for predicting shoegaze and dreampop as a genre correctly was 0.677 and 0.689, respectively. After using random forest to establish the most important features, the accuracy for both genres became 0.766. The most import features turned out to be the following:
+A common stereotype for both shoegaze and dreampop is that both genres sound the same and are **hard to distinguish**. With a k-nearest classifier we will try to distinguish these two genres, using the spotify playlist 'Shoegaze classics' and 'Dreampop', the two most popular playlists for both genres. Before feature selection, the accuracy for predicting shoegaze and dreampop as a genre correctly was **0.677 and 0.689**, respectively. After using random forest to establish the most important features, the accuracy for both genres became **0.766**. The most import features turned out to be the following:
 
   - Timbre 2 (brightness)
   - Duration
@@ -128,241 +410,8 @@ A common stereotype for both shoegaze and dreampop is that both genres sound the
   - Accousticness
   - Danceability
   
-After these five there is a significant drop in importance. It is interesting to note that the accuracy score for the classifier is actually pretty good, despite said prejudice. Another interesting point is the importance of duration in classifying correctly. After looking at both playlists, shoegaze songs tend to be much longer than dreampop songs. The importance of accousticness and the second timbre component can be explained by the lack of guitar in most dreampop songs, and how they focus more on atmosphere and 'clean' production than shoegaze.
+It is interesting to note that the accuracy score for the classifier is actually pretty good, despite said prejudice. Another interesting point is the importance of **duration** in classifying correctly. After looking at both playlists, shoegaze songs tend to be much longer than dreampop songs. The importance of accousticness and the second timbre component can be explained by the lack of guitar in most dreampop songs, and how they focus more on atmosphere and 'clean' production than shoegaze.
 
-### The consistent tempo of shoegaze songs
-```{r}
-dark <- get_tidy_audio_analysis("4kAflSfOBf6Wv5ZD5abUvZ")
-```
-```{r}
-dark %>%
-  tempogram(window_size = 8, hop_size = 1, cyclic = FALSE) %>%
-  ggplot(aes(x = time, y = bpm, fill = power)) +
-  geom_raster() +
-  scale_fill_viridis_c(guide = "none") +
-  labs(x = "Time (s)", y = "Tempo (BPM)") +
-  theme_classic()
-```
-
-***
-
-Shoegaze is not known for having big changes in tempo throughout songs, because of its tendency to have a consistent wall of sound. A clear example of this is in the tempogram which describes the tempo of the song 'No longer making time' by Slowdive. As you can see the tempo is almost the same for the whole duration of the song. There is a little drop at the 300 seconds mark, which is probably the point in the song where there is a fade out, after which the song repeats its intro one last time. 
-
-### Low level visualisations of dreampop and shoegaze songs
-```{r, echo=FALSE}
-gaze <-
-  get_playlist_audio_features(
-    "thesoundsofspotify",
-    "5ydNNBQbwQJuhmcxyo8K1f"
-  ) %>%
-  slice(1:60) %>%
-  add_audio_analysis()
-dreampop <-
-  get_playlist_audio_features(
-    "thesoundsofspotify",
-    "2A5zN7OTP4n64gEtsFEO2Z"
-  ) %>%
-  slice(1:60) %>%
-  add_audio_analysis()
-compare <-
-  gaze %>%
-  mutate(genre = "Shoegaze") %>%
-  bind_rows(dreampop %>% mutate(genre = "Dream pop"))
-
-```
-
-```{r, echo=FALSE}
-compare %>%
-  mutate(
-    sections =
-      map(
-        sections,                                    # sections or segments
-        summarise_at,
-        vars(tempo, loudness, mode),             # features of interest
-        list(section_mean = mean, section_sd = sd)   # aggregation functions
-      )
-  ) %>%
-  unnest(sections) %>%
-  ggplot(
-    aes(
-      x = tempo,
-      y = tempo_section_sd,
-      colour = genre,
-      alpha = loudness,
-      label = track.name
-    )
-  ) +
-  geom_point(aes(size = mode)) +
-  scale_radius(range = c(3,5), breaks = c(0,1), labels = c("Minor","Major"))+
-  geom_rug() +
-  theme_minimal() +
-  ylim(0, 5) +
-  labs(
-    x = "Mean Tempo (bpm)",
-    y = "SD Tempo",
-    colour = "Genre",
-    size = "Mode",
-    alpha = "Volume (dBFS)"
-  ) 
-
-```
-
-***
-
-This graph shows the mean tempo, standard deviation of it, loudness and mode of shoegaze and dreampop songs. Dreampop is a subgenre, inspired by shoegaze, focussing more on melodic harmonies and atmosphere, and less on the use of heavy guitar, resulting in a so-called "wall of sound" commonly used in shoegaze. You could see it as shoegaze being the more agressive version of dreampop. For both genres the "sounds of spotify" playlists were used.
-In the visualisation you can see that shoegaze generally has a higher tempo than dreampop, and is more clustered towards a very low standard deviation of the tempo. This could be because shoegaze tends to create a constant sound, leaving no room for empty space were the tempo could change. The outliers could be from songs that feature a more traditional verse-chorus-verse structure, were the tempo alternates. The dreampop songs are more scattered around the graph, with the majority having a slower tempo.
-
-### Welcome to my main page. Here you can find a short introduction about my corpus and research
-
-PLEASE DONT SHOW IN CLASS
-
-This corpus consists of albums from shoegaze bands, both from the 90s and modern day. The older albums are amongst the most famous shoegaze albums of all time, and are considered to be the foundation of the genre. These include bands such as Slowdive, Jesus and the mary chain, and Ride. There are also modern day shoegaze bands, such as DIIV, Ringo Deathstarr and the reunion albums of Slowdive and Ride, two artists who are nowadays seen as two of the 'big three' of shoegaze.
-
-In this corpus it will be interesting to compare the older albums to the modern albums. How much of the genre has changed since the ending of shoegaze in the 90s and it's resurgence in the 10s? And how is this change visible in the bands who made reunion albums 25 years later? Could the change in music style be explained by the status this genre had during both time periods?
-
-I chose this corpus because shoegaze is one of my favourite genres, en because people always comment on how all of the songs sound almost the same. Therefore I would also like to see how alike those songs actually are. One of the flaws of this corpus is the fact that the biggest name in this genre, my bloody valentine, is not on spotify. But despite this, there are still more than enough big bands from both the past and the present who can represent the genre. 
-
-Tracks from Beach House and Cocteau twins will probably standout because of their lack of guitar. It will be interesting to see why and how these dreampop/shoegaze bands still share a resemblance and draw inspiration from the classic shoegaze bands.
+### Conclusions
 
 
-```{r, echo = FALSE}
-library(tidyverse)
-library(spotifyr)
-library(plotly)
-library(compmus)
-```
-### The change between Slowdive and Ride's first albums and their reunion albums, 25 years later
-
-```{r, echo = FALSE}
-just <- get_playlist_audio_features("", "6NqUXlpEEFZNytZiGLi4kW")
-slowdive <- get_playlist_audio_features("", "12KhHp6mG8xZz1urkeBhoS")
-nowhere <- get_playlist_audio_features("","5vTh9r5EEF3BoUxZ4p7X0i")
-lush <- get_playlist_audio_features("", "23erpreDqZ096vOZRYfS2y")
-safe <- get_playlist_audio_features("","7yi73753IXvjbyxGCKpjIt")
-weather <- get_playlist_audio_features("","5DYuHfzZwJE1KrJFoLFksi")
-
-combi <-
-  bind_rows(
-    just %>% mutate(category = "90s"),
-    slowdive %>% mutate(category = "10s"),
-    nowhere %>% mutate(category = "90s"),
-    lush %>% mutate(category = "90s"),
-    safe %>% mutate(category = "10s"),
-    weather %>% mutate(category = "10s")
-  )
-```
-
-```{r, echo = FALSE}
-interact <- combi %>%
-  ggplot(aes(x = loudness, y = instrumentalness, color = mode, size = tempo, label = track.name)) + geom_point(alpha = 0.5) + 
-  
-  facet_wrap(~category) + ggtitle("Slowdive and Ride in the 90s vs the present")+ theme(plot.title = element_text(size = 15))+theme_light() +      
-  labs(               
-    x = "Loudness",
-    y = "Instrumentalness",
-    colour = "Mode",
-    size = "Tempo") + scale_color_binned(breaks = c(0,0.5,1), labels = c("Minor",0.5,"Major")) + scale_size_continuous() + scale_x_continuous() + scale_y_continuous() 
-
-ggplotly(interact)
-```
-
-
-
-
-
-***
-
-This graph compares Slowdive and Ride's music from the 90s, and their reunion albums from the 10s.
-
-One conclusion from this comparison is that the newer shoegaze songs from these bands are louder than the songs from the 90s. Also, a lot of songs in the 90s are spread along the x-axis, around -5, which indicates some kind of sweet spot for loudness. Last of all, the newer songs tend to be in major key more often than in the 90s. In the 90s, shoegaze was considered as 'emo' music, which might explain why there were more songs in minor key back then. It would be interesting to see if this change from minor to major also appears in other bands.
-
-The group of songs with very low intrumentalism are  songs which also have a very low speechiness, according to spotify's data. I'm not sure yet why, because this seems to contradict. It might be because their vocals really blend into the guitar, and this might be harder to differentiate for the algorithm. Another explanation might be that the music in those songs is one big "wall of sound" (a key aspect of shoegaze), which might cause problems with detecting the overall instrumentalness. 
-
-### The chromatogram of 40 days by Slowdive shows a lot of shifting between chords
-
-```{r, echo = FALSE}
-fortydays <-
-  get_tidy_audio_analysis("3jQBAyQVJSl9fc6l4tsWWP") %>%
-  select(segments) %>%
-  unnest(segments) %>%
-  select(start, duration, pitches)
-```
-
-```{r, echo = FALSE}
-fortydays %>%
-  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) %>%
-  compmus_gather_chroma() %>% 
-  ggplot(
-    aes(
-      x = start + duration / 2,
-      width = duration,
-      y = pitch_class,
-      fill = value
-    )
-  ) +
-  geom_tile() +
-  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
-  theme_minimal() +
-  scale_fill_viridis_c()
-
-```
-
-
-***
-This chromatogram shows the song "40 days" from Slowdive's album Souvlaki (1994). This track was an outlier in the graph which compared the 90s albums with the modern albums, because of its very low instrumentalness. You can see that the pitch class of this track quickly shifts from D and E, and for some part G and B. This is probably because of the different guitar layers in the song, and the use of guitar pedals. This way they can quickly and smoothly alternate between chords. However, this still does not explain the extremely low instrumentalness of the track according to spotify.
-
-### The unconventional structure of 'Acheron", by new-gaze band DIIV
-
-```{r, echo=FALSE}
-irene <-
-  get_tidy_audio_analysis("4OcknjyF0hyytplO20bMHK") %>% # Change URI.
-  compmus_align(bars, segments) %>%                     # Change `bars`
-  select(bars) %>%                                      #   in all three
-  unnest(bars) %>%                                      #   of these lines.
-  mutate(
-    pitches =
-      map(segments,
-        compmus_summarise, pitches,
-        method = "acentre", norm = "manhattan"              # Change summary & norm.
-      )
-  ) %>%
-  mutate(
-    timbre =
-      map(segments,
-        compmus_summarise, timbre,
-        method = "rms", norm = "euclidean"              # Change summary & norm.
-      )
-  )
-```
-
-```{r, echo=FALSE}
-bind_rows(
-  irene %>% 
-    compmus_self_similarity(pitches, "aitchison") %>% 
-    mutate(d = d / max(d), type = "Chroma"),
-  irene %>% 
-    compmus_self_similarity(timbre, "euclidean") %>% 
-    mutate(d = d / max(d), type = "Timbre")
-) %>%
-  mutate() %>% 
-  ggplot(
-    aes(
-      x = xstart + xduration / 2,
-      width = xduration,
-      y = ystart + yduration / 2,
-      height = yduration,
-      fill = d
-    )
-  ) +
-  geom_tile() +
-  coord_fixed() +
-  facet_wrap(~type) +
-  scale_fill_viridis_c(option = "E", guide = "none") +
-  theme_classic() + 
-  labs(x = "", y = "")
-
-```
-
-***
-These self similarity matrices show the structure of the 7-minute album closer 'Acheron' (2019), composed by the new-gaze band DIIV. After two albums where they made more valent tracks, their latest album was more inspired by the traditional 'emo' shoegaze from the 90s, with this song being one of the noisier songs on the album. 
-The two matrices are both at bars level, and use manhattan and euclidean normalisation, respectively. The chroma-based matrix shows how the first half of the song follows the classic verse-chorus-verse-chorus structure. Around 220 seconds, there is a switch in the song, which features a long bridge which transitions in an instrumental outro. The structure of the second half is more visible in the timbre-based matrix. There you can see a clear distinction between the end of the bridge and the beginning of the outro. The outro adds a lot more guitar layers, and the sound gets amore 'heavy' than during the bridge, hence the clear distinction at the 320 second mark.
